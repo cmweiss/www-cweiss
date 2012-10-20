@@ -33,6 +33,7 @@ http {
     #gzip  on;
 
     server {
+        daemon off;
         listen       <%= ENV['PORT'] %>;
         server_name  localhost;
 
