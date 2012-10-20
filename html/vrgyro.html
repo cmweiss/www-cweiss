@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+		<title>VR Gyro</title>
+		<meta name="viewport" content="width=device-width,initial-scale = 1.0,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<style>
+body {
+	margin: 0px;
+}
+
+html body {
+	height: 480px;
+	width: 320px;
+	overflow: hidden;
+}
+
+#chevron {
+	position: absolute;
+	width: 145px;
+	height: 36px;
+	z-index: 100;
+}
+		</style>
+		<script src="Three.js"></script>
+		<script>
+/*jslint indent: 4, maxerr: 50, browser: true, devel: true */
+/*global THREE: true */
+var camera, scene, renderer, earth, sky, globe,
+	intervalId,
+	alpha = 0, beta = 90, gamma = 0,
+	deviceEuler = new THREE.Vector3();
+
+function rad(deg) {
+	'use strict';
+	return deg * (Math.PI / 180);
+}
+
+function updateScene() {
+	'use strict';
+	deviceEuler.set(rad(beta), rad(gamma), rad(alpha));  // about x (beta), about y (gamma), about z (alpha)
+	camera.rotation = deviceEuler;
+	renderer.render(scene, camera);
+}
+
+
+window.onload = function () {
+	'use strict';
+	var canvasWidth = window.innerWidth,
+		canvasHeight = window.innerHeight,
+		wFOV = window.innerWidth > window.innerHeight ? 60 : 30,
+		aspectRatio = canvasWidth / canvasHeight,
+		FOV = wFOV / aspectRatio,
+		cameraContainer = new THREE.Object3D();
+
+	(function () { // Draw chevron
+		var chevCanvas = document.getElementById('chevron'),
+			chev = chevCanvas.getContext('2d');
+		chevCanvas.style.top = (canvasHeight / 2) + 'px';
+		chevCanvas.style.left = (canvasWidth / 2 - 145 / 2) + 'px';
+		chev.canvas.width = 145;
+		chev.canvas.height = 36;
+		chev.fillStyle = '#ffff00';
+		chev.beginPath();
+		chev.moveTo(0, 36);
+		chev.lineTo(145 / 2, 0);
+		chev.lineTo(145, 36);
+		chev.lineTo(145 / 2, 15);
+		chev.lineTo(0, 36);
+		chev.fill();
+		chev.fillStyle = '#7f7f00';
+		chev.beginPath();
+		chev.moveTo(0, 36);
+		chev.lineTo(145 / 2, 15);
+		chev.lineTo(145, 36);
+		chev.lineTo(145 / 2, 27);
+		chev.lineTo(0, 36);
+		chev.fill();
+	}());
+
+	scene = new THREE.Scene();
+	camera = new THREE.PerspectiveCamera(FOV, aspectRatio, 1, 110000);
+	camera.useQuaternion = false;
+	camera.eulerOrder = 'ZXY'; // Euler order of gyro api -- about z (alpha), about x (beta), about y (gamma)
+	cameraContainer.add(camera);
+	cameraContainer.rotation.x = -Math.PI / 2;
+	scene.add(cameraContainer);
+	sky = new THREE.Mesh(new THREE.SphereGeometry(50000, 36, 9, 0, 2 * Math.PI, Math.PI / 2, -Math.PI / 2),
+		new THREE.MeshBasicMaterial({color: 0x5b93c5, wireframe: false}));
+	earth = new THREE.Mesh(
+		new THREE.SphereGeometry(50000, 36, 9, 0, 2 * Math.PI, Math.PI, -Math.PI / 2),
+		new THREE.MeshBasicMaterial({color: 0x7d5233, wireframe: false})
+	);
+
+	globe = new THREE.Object3D();
+	globe.add(sky);
+	globe.add(earth);
+	scene.add(globe);
+	renderer = new THREE.CanvasRenderer();
+	renderer.setSize(canvasWidth, canvasHeight);
+	document.body.appendChild(renderer.domElement);
+	updateScene();
+	if (window.DeviceOrientationEvent !== undefined) {
+		window.ondeviceorientation = function (event) {
+			alpha = event.alpha;
+			beta = event.beta;
+			gamma = event.gamma;
+		};
+		intervalId = setInterval(updateScene, 30 / 1000);
+	}
+};
+		</script>
+	</head>
+	<body>
+		<canvas id="chevron"></canvas>
+	</body>
+</html>
