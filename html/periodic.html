@@ -1,0 +1,120 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<title>Periodic Bell Ringer</title>
+		<style>
+body {
+	font-family: sans-serif;
+}
+
+header {
+	font-weight: bold;
+}
+		</style>
+		<script>
+
+function init() {
+	'use strict'
+	var audio = new Audio(), timerId, countTimerId, timeSince = 0,
+		countUp = document.getElementById('countup'),
+		startStopButton = document.getElementById('startStopButton'),
+		showTimer = document.getElementById('showTimer');
+	audio.src = 'ding.wav';
+/*
+	// Start button
+	document.getElementById('startButton').onclick = function () {
+		var timeAmt = parseFloat(document.getElementById('timeAmt').value),
+			units = document.getElementById('units').value,
+			seconds = 1000,
+			minutes = 60 * seconds,
+			hours = 60 * minutes,
+			milliseconds;
+		document.getElementById('stopButton').onclick();
+		showTimer.style.visibility = 'visible';
+		if (units === 's') {
+			milliseconds = timeAmt * seconds;
+		} else if (units === 'm') {
+			milliseconds = timeAmt * minutes;
+		} else if (units === 'h') {
+			milliseconds = timeAmt * hours;
+		}
+
+		countUp.innerHTML = timeSince;
+		timeSince++;
+		countTimerId = window.setInterval(function () {
+			countUp.innerHTML = timeSince;
+			timeSince++;
+		}, 1000);
+
+		audio.play();
+		timerId = window.setInterval(function() {
+			audio.play();
+			timeSince = 0;
+		}, milliseconds);
+	}
+	// Stop button
+	document.getElementById('stopButton').onclick = function () {
+		showTimer.style.visibility = 'hidden';
+		countUp.innerHTML = '';
+		timeSince = 0;
+		if (timerId) {window.clearInterval(timerId);}
+		if (countTimerId) {window.clearInterval(countTimerId);}
+	}
+*/
+	// Start/Stop button
+	startStopButton.onclick = function () {
+		var timeAmt = parseFloat(document.getElementById('timeAmt').value),
+			units = document.getElementById('units').value,
+			seconds = 1000,
+			minutes = 60 * seconds,
+			hours = 60 * minutes,
+			milliseconds;
+		if (startStopButton.innerHTML == 'Start') { // Start
+			startStopButton.innerHTML = 'Stop';
+			showTimer.style.visibility = 'visible';
+			if (units === 's') {
+				milliseconds = timeAmt * seconds;
+			} else if (units === 'm') {
+				milliseconds = timeAmt * minutes;
+			} else if (units === 'h') {
+				milliseconds = timeAmt * hours;
+			}
+
+			countUp.innerHTML = timeSince;
+			timeSince++;
+			countTimerId = window.setInterval(function () {
+				countUp.innerHTML = timeSince;
+				timeSince++;
+			}, 1000);
+
+			audio.play();
+			timerId = window.setInterval(function() {
+				audio.play();
+				timeSince = 0;
+			}, milliseconds);
+		} else { // Stop
+			startStopButton.innerHTML = 'Start';
+			showTimer.style.visibility = 'hidden';
+			countUp.innerHTML = '';
+			timeSince = 0;
+			if (timerId) {window.clearInterval(timerId);}
+			if (countTimerId) {window.clearInterval(countTimerId);}
+		}
+	}
+}
+		</script>
+	</head>
+	<body onload="init()">
+	<header>Periodic Bell Ringer</header>
+	How often: <input type="text" name="timeAmt" id="timeAmt" size="3" />
+	<select name="units" id="units">
+		<option value="s">Seconds</option>
+		<option value="m">Minutes</option>
+		<option value="h">Hours</option>
+	</select>
+	<!-- <button id="startButton">Start</button><button id="stopButton">Stop</button> -->
+	<button id="startStopButton">Start</button>
+	<div id="showTimer" style="visibility: hidden;"><span id="countup"></span> sec</div>
+	<span id="audio"></span>
+	</body>
+</html>

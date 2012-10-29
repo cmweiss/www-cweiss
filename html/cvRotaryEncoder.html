@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Continuously Variable Rotary Encoder</title>
+        <style>
+body {
+    margin: 0px;
+}
+        </style>
+        <script>
+window.onload = function () {
+    'use strict';
+    var canvas = document.getElementById('canvas'),
+        ctx = canvas.getContext('2d'),
+        xOrigin = window.innerWidth / 2,
+        yOrigin = window.innerHeight / 2,
+        t, x, y, r, alpha; // t is parametric variable x, y, r, & alpha are coords
+    canvas.width = (window.innerWidth - 0);
+    canvas.height = window.innerHeight - 5;
+    function cartesianToCanvas(x, y) {
+        return {x: xOrigin + x, y: yOrigin - y};
+    }
+    function polarToCanvas(a, r) {
+        return cartesianToCanvas(r * Math.sin(a), r * Math.cos(a));
+    }
+    function plotParametricCartesian(fX, fY, steps) {
+        var t, c, x, y;
+        steps = steps || 100;
+        c = cartesianToCanvas(fX(0), fY(0));
+        ctx.moveTo(c.x, c.y);
+        for (t = 1 / steps; t <= 1; t += 1 / steps) {
+            c = cartesianToCanvas(fX(t), fY(t));
+            ctx.lineTo(c.x, c.y);
+        }
+    }
+    function plotParametricPolar(fAlpha, fRadius, steps) {
+        var t, a, r, x, y, c;
+        steps = steps || 100;
+        c = polarToCanvas(fAlpha(0), fRadius(0));
+        ctx.moveTo(c.x, c.y);
+        for (t = 1 / steps; t <= 1; t += 1 / steps) {
+            c = polarToCanvas(fAlpha(t), fRadius(t));
+            ctx.lineTo(c.x, c.y);
+        }
+    }
+    function drawCartesianAxes() {
+        ctx.beginPath();
+        ctx.moveTo(0, yOrigin);
+        ctx.lineTo(window.innerWidth, yOrigin);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(xOrigin, 0);
+        ctx.lineTo(xOrigin, window.innerHeight);
+        ctx.stroke();
+    }
+    
+    (function () {
+        var sMax = 300, // sine max value (outer edge)
+            cMin = 25, // cosine min value (inner edge)
+            sMin = sMax - (sMax - cMin) / 2, // sine min value
+            cMax = sMin; // cosine max value
+        // Outer circle
+        ctx.fillStyle = 'black';
+        ctx.beginPath();
+        ctx.arc(xOrigin, yOrigin, 310, 0, 2 * Math.PI)
+        ctx.closePath();
+        ctx.fill();
+
+        // Larger sine polar plot
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        plotParametricPolar(
+            function (t) {return 2 * Math.PI * t;},
+            function (t) {return (sMax - ((sMax - sMin) / 2)) + ((sMax - sMin) / 2) * Math.sin(2 * Math.PI * t)});
+        ctx.closePath();
+        ctx.fill();
+
+        // Smaller cosine polar plot
+        ctx.fillStyle = 'black';
+        ctx.beginPath();
+        plotParametricPolar(
+            function (t) {return 2 * Math.PI * t;},
+            function (t) {return (cMax - ((cMax - cMin) / 2)) + ((cMax - cMin) / 2) * Math.cos(2 * Math.PI * t)});
+        ctx.closePath();
+        ctx.fill();
+        
+        // Inner circle
+/*        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(xOrigin, yOrigin, 25, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+*/
+        ctx.beginPath();
+        ctx.strokeStyle = 'white';
+        ctx.moveTo(xOrigin, yOrigin - 5);
+        ctx.lineTo(xOrigin, yOrigin + 5);
+        ctx.stroke();
+        ctx.moveTo(xOrigin - 5, yOrigin);
+        ctx.lineTo(xOrigin + 5, yOrigin);
+        ctx.stroke();
+//        drawCartesianAxes();
+    }());
+    
+}
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Parametric Plots</title>
+        <style>
+body {
+    margin: 0px;
+}
+        </style>
+        <script>
+window.onload = function () {
+    'use strict';
+    var canvas = document.getElementById('canvas'),
+        ctx = canvas.getContext('2d'),
+        xOrigin = window.innerWidth / 2,
+        yOrigin = window.innerHeight / 2,
+        t, x, y, r, alpha; // t is parametric variable x, y, r, & alpha are coords
+    canvas.width = (window.innerWidth - 0);
+    canvas.height = window.innerHeight - 5;
+    function polarToCanvas(a, r) {
+        return cartesianToCanvas(r * Math.sin(a), r * Math.cos(a));
+    }
+    function cartesianToCanvas(x, y) {
+        return {x: xOrigin + x, y: yOrigin - y};
+    }
+    function plotParametricCartesian(fX, fY, steps) {
+        var t, c, x, y;
+        steps = steps || 100;
+        c = cartesianToCanvas(fX(0), fY(0));
+        ctx.moveTo(c.x, c.y);
+        for (t = 1 / steps; t < 1; t += 1 / steps) {
+            c = cartesianToCanvas(fX(t), fY(t));
+            ctx.lineTo(c.x, c.y);
+        }
+        c = cartesianToCanvas(fX(1), fY(1));
+        ctx.lineTo(c.x, c.y);
+    }
+    function plotParametricPolar(fAlpha, fRadius, steps) {
+        var t, a, r, x, y, c;
+        steps = steps || 100;
+        c = polarToCanvas(fAlpha(0), fRadius(0));
+        ctx.moveTo(c.x, c.y);
+        for (t = 1 / steps; t <= 1; t += 1 / steps) {
+            c = polarToCanvas(fAlpha(t), fRadius(t));
+            ctx.lineTo(c.x, c.y);
+        }
+    }
+    function drawCartesianAxes() {
+        ctx.beginPath();
+        ctx.moveTo(0, yOrigin);
+        ctx.lineTo(window.innerWidth, yOrigin);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(xOrigin, 0);
+        ctx.lineTo(xOrigin, window.innerHeight);
+        ctx.stroke();
+    }
+    
+    (function () {
+        var sMax = 300, // sine max value (outer edge)
+            cMin = 25, // cosine min value (inner edge)
+            sMin = sMax - (sMax - cMin) / 2, // sine min value
+            cMax = sMin, // cosine max value
+            xScale = sMax - sMin;
+
+        // Upper sine plot
+        ctx.beginPath();
+        console.log('Sine wave...');
+        plotParametricCartesian(
+            function (t) {return t * 600;},
+            function (t) {return 300 * Math.sin(2 * Math.PI * t)});
+        ctx.stroke();
+
+        // Lower cosine plot
+        ctx.beginPath();
+        console.log('Cosine wave...');
+        plotParametricCartesian(
+            function (t) {return t * 600;},
+            function (t) {return 300 * Math.cos(2 * Math.PI * t)});
+        ctx.stroke();
+/*
+        // Upper sine plot
+        ctx.beginPath();
+        plotParametricCartesian(
+            function (t) {return t * xScale;},
+            function (t) {return (sMax - ((sMax - sMin) / 2)) + ((sMax - sMin) / 2) * Math.sin(2 * Math.PI * t)});
+        ctx.stroke();
+
+        // Lower cosine plot
+        ctx.beginPath();
+        plotParametricCartesian(
+            function (t) {return t * xScale;},
+            function (t) {return (cMax - ((cMax - cMin) / 2)) + ((cMax - cMin) / 2) * Math.cos(2 * Math.PI * t)});
+        ctx.stroke();
+*/        
+        // Inner circle
+/*        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(xOrigin, yOrigin, 25, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+*/
+        // Wave axes
+/*
+        ctx.beginPath();
+        ctx.moveTo(xOrigin, yOrigin);
+        ctx.lineTo(xOrigin, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(xOrigin, yOrigin - (sMin + (sMax - sMin) / 2));
+        ctx.lineTo(xOrigin + xScale, yOrigin - (sMin + (sMax - sMin) / 2));
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(xOrigin, yOrigin - cMax);
+        ctx.lineTo(xOrigin + xScale, yOrigin - cMax);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(xOrigin, yOrigin - (cMin + (cMax - cMin) / 2));
+        ctx.lineTo(xOrigin + xScale, yOrigin - (cMin + (cMax - cMin) / 2));
+        ctx.stroke();
+
+        // Origin Indicator
+        ctx.beginPath();
+        ctx.strokeStyle = 'black';
+        ctx.moveTo(xOrigin, yOrigin - 5);
+        ctx.lineTo(xOrigin, yOrigin + 5);
+        ctx.stroke();
+        ctx.moveTo(xOrigin - 5, yOrigin);
+        ctx.lineTo(xOrigin + 5, yOrigin);
+        ctx.stroke();
+*/
+        drawCartesianAxes();
+    }());
+    
+}
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
