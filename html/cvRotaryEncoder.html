@@ -55,14 +55,17 @@ window.onload = function () {
     }
     
     (function () {
-        var sMax = 300, // sine max value (outer edge)
-            cMin = 25, // cosine min value (inner edge)
-            sMin = sMax - (sMax - cMin) / 2, // sine min value
-            cMax = sMin; // cosine max value
+        var maxRadius = ((canvas.height < canvas.width ? canvas.height : canvas.width) / 2),
+            outerEdge = maxRadius * 0.95,
+            sMax = outerEdge * 0.95, //300, // sine max value (outer edge)
+            cMin = maxRadius * 0.05, //25, // cosine min value (inner edge)
+            overlap = 0.1721,
+            sMin = sMax - (((sMax - cMin) / 2) * (1 + overlap)), // sine min value
+            cMax = sMax - (((sMax - cMin) / 2) * (1 - overlap)); // cosine max value
         // Outer circle
         ctx.fillStyle = 'black';
         ctx.beginPath();
-        ctx.arc(xOrigin, yOrigin, 310, 0, 2 * Math.PI)
+        ctx.arc(xOrigin, yOrigin, outerEdge, 0, 2 * Math.PI)
         ctx.closePath();
         ctx.fill();
 
@@ -71,7 +74,8 @@ window.onload = function () {
         ctx.beginPath();
         plotParametricPolar(
             function (t) {return 2 * Math.PI * t;},
-            function (t) {return (sMax - ((sMax - sMin) / 2)) + ((sMax - sMin) / 2) * Math.sin(2 * Math.PI * t)});
+            function (t) {return (sMax - ((sMax - sMin) / 2)) + ((sMax - sMin) / 2) * Math.sin(2 * Math.PI * t)},
+            200);
         ctx.closePath();
         ctx.fill();
 
@@ -80,7 +84,8 @@ window.onload = function () {
         ctx.beginPath();
         plotParametricPolar(
             function (t) {return 2 * Math.PI * t;},
-            function (t) {return (cMax - ((cMax - cMin) / 2)) + ((cMax - cMin) / 2) * Math.cos(2 * Math.PI * t)});
+            function (t) {return (cMax - ((cMax - cMin) / 2)) + ((cMax - cMin) / 2) * Math.cos(2 * Math.PI * t)},
+            200);
         ctx.closePath();
         ctx.fill();
         
@@ -103,6 +108,9 @@ window.onload = function () {
     }());
     
 }
+
+window.onresize = window.onload;
+
         </script>
     </head>
     <body>
